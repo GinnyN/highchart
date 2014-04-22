@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Graficos</title>
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<form enctype="multipart/form-data" action={% url 'upload' %} method="POST">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button class="btn btn-primary"> Subir </button>
+		</form>
+		<div id="container">
+
+		</div>
+	</body>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/modules/data.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+	<script>
+		$(function () {
+			    var options = {
+                chart: {
+                    renderTo: 'container',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Web Sales & Marketing Efforts'
+                },
+                tooltip: {
+                    formatter: function() {
+                        return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            formatter: function() {
+                                return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: 'Browser share',
+                    data: []
+                }]
+            }
+
+			    $.getJSON("http://127.0.0.1:8000/api/v1/jugo/?format=json", function(json) {
+                	options.series[0].data = json.objects;
+                	chart = new Highcharts.Chart(options);
+                	$("#container").html(chart)
+            	});
+		});
+	</script>
+</html>
